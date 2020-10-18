@@ -212,6 +212,7 @@
         android:layout_width="324dp"
         android:layout_height="40dp"
         android:textSize="24sp"
+        android:maxLength="12"
         app:layout_constraintBaseline_toBaselineOf="@+id/buttonclear"
         app:layout_constraintEnd_toStartOf="@+id/buttonclear"
         app:layout_constraintHorizontal_bias="1.0"
