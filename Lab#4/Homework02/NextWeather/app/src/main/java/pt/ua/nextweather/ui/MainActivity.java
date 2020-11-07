@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +37,7 @@ import pt.ua.nextweather.network.ForecastForACityResultsObserver;
 import pt.ua.nextweather.network.IpmaWeatherClient;
 import pt.ua.nextweather.network.WeatherTypesResultsObserver;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity {
 
     private TextView feedback;
 
@@ -90,24 +93,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    @Override
-    public void onClick(View v){
-        String city =((TextView)((LinearLayout)v).getChildAt(0)).getText().toString();
-        Log.d("onclick",city);
-        ft.replace(R.id.your_placeholder, Fragment_B_info.newInstance(city));
+    public class OnClickCity implements View.OnClickListener, Serializable, Parcelable {
+        static final long serialVersionUID = 42L;
+        @Override
+        public void onClick(View v) {
+            String city = ((TextView)((LinearLayout) v).getChildAt(0)).getText().toString();
+            Log.d("Onclick",city);
+            weatherDetails(city);
+        }
 
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel parcel, int i) {
+
+        }
     }
 
 
 
-    private void callWeatherForecastForACityList(){
+    public void weatherDetails(String city){
+        Intent myIntent = new Intent(this, ActivityB.class);
+        myIntent.putExtra("string", city); //Optional parameters
+        startActivity(myIntent);
+    }
+
+
+
+        private void callWeatherForecastForACityList(){
         client.retrieveCitiesList(new CityResultsObserver() {
             @Override
             public void receiveCitiesList(HashMap<String, City> citiesCollection) {
                 MainActivity.this.cities = citiesCollection;
                 // Begin the transaction
                 // Replace the contents of the container with the new fragment
-                Fragment x = Fragment_A_list.newInstance(new ArrayList<>(cities.keySet()));
+                Fragment x = Fragment_A_list.newInstance(new ArrayList<>(cities.keySet()), new OnClickCity());
                 //Fragment x = FragmentA_list.newInstance(cars);
                 //ft.replace(R.id.your_placeholder, Fragment_B_info.newInstance("Porto"));
                 ft.replace(R.id.your_placeholder, x);
@@ -115,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Complete the changes added above
                 ft.commit();
             }
-
             @Override
             public void onFailure(Throwable cause) {
                 feedback.append("Failed to get cities list!");

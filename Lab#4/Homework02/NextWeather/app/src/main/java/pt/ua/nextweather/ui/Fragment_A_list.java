@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import pt.ua.nextweather.R;
@@ -25,18 +26,19 @@ public class Fragment_A_list extends Fragment {
     private RecyclerView mRecyclerView;
     private CityListAdapter mAdapter;
     private static final String CITY_LIST = "list";
+    private static final String CLICK_LIST = "clicker";
     private ArrayList<String> mCityList;
+    private View.OnClickListener clicker;
 
     public Fragment_A_list() {
         // Required empty public constructor
     }
 
-    public static Fragment_A_list newInstance(ArrayList<String> mCityList) {
+    public static Fragment_A_list newInstance(ArrayList<String> mCityList, Serializable clicker) {
         Fragment_A_list fragment = new Fragment_A_list();
         Bundle args = new Bundle();
         args.putStringArrayList(CITY_LIST,mCityList);
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
+        args.putSerializable(CLICK_LIST, clicker);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,6 +48,7 @@ public class Fragment_A_list extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mCityList =getArguments().getStringArrayList(CITY_LIST);
+            clicker = (View.OnClickListener) getArguments().getSerializable(CLICK_LIST);
 
         }
 
@@ -59,7 +62,7 @@ public class Fragment_A_list extends Fragment {
         // Get a handle to the RecyclerView.
         mRecyclerView = view.findViewById(R.id.recyclerview);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new CityListAdapter(view.getContext(), mCityList);
+        mAdapter = new CityListAdapter(view.getContext(), mCityList, clicker);
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
