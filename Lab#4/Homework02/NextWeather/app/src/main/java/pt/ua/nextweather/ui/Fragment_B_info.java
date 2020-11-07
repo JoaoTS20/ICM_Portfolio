@@ -70,7 +70,7 @@ public class Fragment_B_info extends Fragment {
         return view;
     }
 
-    //Funções para obter dados
+    ////Funções de apoio para a Api
 
     private void callWeatherForecastForACityStep1(String city) {
 

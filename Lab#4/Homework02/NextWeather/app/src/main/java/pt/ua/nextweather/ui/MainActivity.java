@@ -2,6 +2,7 @@ package pt.ua.nextweather.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
     private HashMap<Integer, WeatherType> weatherDescriptions;
+    private boolean DualPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,20 @@ public class MainActivity extends AppCompatActivity {
         //Começar Fragment
         feedback = findViewById(R.id.tvFeedback);
         //feedback.setText(cities.size());
+
+        //check orientation
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.d("DualPane", "landscape");
+            DualPane = true;
+        } else {
+            Log.d("DualPane", "vertical");
+            DualPane=false;
+        }
+        /*View v = findViewById(R.id.your_placeholder2);
+        DualPane = v != null &&  v.getVisibility() == View.VISIBLE;
+        Log.d("DualPaned", String.valueOf(DualPane));*/
+
 
     }
 
@@ -99,7 +115,24 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             String city = ((TextView)((LinearLayout) v).getChildAt(0)).getText().toString();
             Log.d("Onclick",city);
-            weatherDetails(city);
+            if(DualPane){
+                View vx = findViewById(R.id.your_placeholder2);
+                vx.setVisibility(vx.VISIBLE);
+                Fragment x = Fragment_B_info.newInstance(city);
+                FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
+                //Fragment x = FragmentA_list.newInstance(cars);
+                //ft.replace(R.id.your_placeholder, Fragment_B_info.newInstance("Porto"));
+                ft2.replace(R.id.your_placeholder2, x);
+                // or ft.add(R.id.your_placeholder, new FooFragment());
+                // Complete the changes added above
+                ft2.commit();
+
+
+            }
+            else{
+                weatherDetails(city);
+            }
+
         }
 
         @Override
@@ -123,7 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        private void callWeatherForecastForACityList(){
+
+
+    private void callWeatherForecastForACityList(){
         client.retrieveCitiesList(new CityResultsObserver() {
             @Override
             public void receiveCitiesList(HashMap<String, City> citiesCollection) {
@@ -145,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Funções de apoio para a Api
 
     private void callWeatherForecastForACityStep1(String city) {
 

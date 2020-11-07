@@ -20,11 +20,27 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/your_placeholder"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/your_placeholder"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/your_placeholder2"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+        </FrameLayout>
+
+    </LinearLayout>
+
 
 
 
