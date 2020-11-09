@@ -3,9 +3,10 @@ package pt.ua.nextweather.datamodel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Weather {
+public class Weather implements Serializable {
 
     @Expose
     private int globalIdLocal;

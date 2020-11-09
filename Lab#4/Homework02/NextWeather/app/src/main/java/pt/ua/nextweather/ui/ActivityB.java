@@ -8,11 +8,17 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import pt.ua.nextweather.R;
+import pt.ua.nextweather.datamodel.Weather;
+import pt.ua.nextweather.datamodel.WeatherType;
 
 public class ActivityB extends AppCompatActivity {
     private FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    private List<Weather> forecast;
+    private HashMap<Integer, WeatherType> weatherdescriptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,11 +26,11 @@ public class ActivityB extends AppCompatActivity {
         setContentView(R.layout.activity_b);
         Intent intent = getIntent();
         String city = intent.getStringExtra("string");
-        Fragment x = Fragment_B_info.newInstance(city);
-        //Fragment x = FragmentA_list.newInstance(cars);
-        //ft.replace(R.id.your_placeholder, Fragment_B_info.newInstance("Porto"));
+        Bundle b = intent.getBundleExtra("data");
+        forecast = (List<Weather>)b.getSerializable("fore");
+        weatherdescriptions = (HashMap<Integer, WeatherType>) b.getSerializable("details");
+        Fragment x = Fragment_B_info.newInstance(city,forecast,weatherdescriptions);
         ft.replace(R.id.your_placeholder2, x);
-        // or ft.add(R.id.your_placeholder, new FooFragment());
         // Complete the changes added above
         ft.commit();
     }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -57,20 +58,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callWeatherForecastForACityStep1("Aveiro");
-            }
-        });
+
 
         callWeatherForecastForACityList();
         //Começar Fragment
         feedback = findViewById(R.id.tvFeedback);
-        //feedback.setText(cities.size());
 
-        //check orientation
+        //Check orientation
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Log.d("DualPane", "landscape");
@@ -79,11 +73,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d("DualPane", "vertical");
             DualPane=false;
         }
-        /*View v = findViewById(R.id.your_placeholder2);
-        DualPane = v != null &&  v.getVisibility() == View.VISIBLE;
-        Log.d("DualPaned", String.valueOf(DualPane));*/
-
-
     }
 
     @Override
@@ -114,48 +103,48 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             String city = ((TextView)((LinearLayout) v).getChildAt(0)).getText().toString();
+            City Mcity = cities.get(city);
             Log.d("Onclick",city);
-            if(DualPane){
-                View vx = findViewById(R.id.your_placeholder2);
-                vx.setVisibility(vx.VISIBLE);
-                Fragment x = Fragment_B_info.newInstance(city);
-                FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
-                //Fragment x = FragmentA_list.newInstance(cars);
-                //ft.replace(R.id.your_placeholder, Fragment_B_info.newInstance("Porto"));
-                ft2.replace(R.id.your_placeholder2, x);
-                // or ft.add(R.id.your_placeholder, new FooFragment());
-                // Complete the changes added above
-                ft2.commit();
+            client.retrieveForecastForCity(Mcity.getGlobalIdLocal(), new ForecastForACityResultsObserver() {
+                @Override
+                public void receiveForecastList(List<Weather> forecast) {
+                    if(DualPane){
+                        View vx = findViewById(R.id.your_placeholder2);
+                        vx.setVisibility(vx.VISIBLE);
+                        Fragment x = Fragment_B_info.newInstance(city, forecast,weatherDescriptions);
+                        FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
+                        //Fragment x = FragmentA_list.newInstance(cars);
+                        //ft.replace(R.id.your_placeholder, Fragment_B_info.newInstance("Porto"));
+                        ft2.replace(R.id.your_placeholder2, x);
+                        // or ft.add(R.id.your_placeholder, new FooFragment());
+                        // Complete the changes added above
+                        ft2.commit();
+                    }
+                    else{
+                        weatherDetails(city, forecast, weatherDescriptions);
+                     }}
 
+                    @Override
+                    public void onFailure(Throwable cause) {
 
-            }
-            else{
-                weatherDetails(city);
-            }
-
+                    }});
         }
-
         @Override
-        public int describeContents() {
-            return 0;
-        }
-
+        public int describeContents() { return 0; }
         @Override
-        public void writeToParcel(Parcel parcel, int i) {
-
-        }
+        public void writeToParcel(Parcel parcel, int i) { }
     }
 
-
-
-    public void weatherDetails(String city){
+    //
+    public void weatherDetails(String city, List<Weather> forecast, HashMap<Integer, WeatherType> weatherDescriptions){
         Intent myIntent = new Intent(this, ActivityB.class);
+        Bundle b = new Bundle();
         myIntent.putExtra("string", city); //Optional parameters
+        b.putSerializable("fore", (Serializable) forecast);
+        b.putSerializable("details", (Serializable) weatherDescriptions);
+        myIntent.putExtra("data",b);
         startActivity(myIntent);
     }
-
-
-
 
 
     private void callWeatherForecastForACityList(){
@@ -179,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    //
+
 
     //Funções de apoio para a Api
 
@@ -239,5 +230,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    private void callWeatherDescription() {
+        // call the remote api, passing an (anonymous) listener to get back the results
+        client.retrieveWeatherConditionsDescriptions(new WeatherTypesResultsObserver() {
+            @Override
+            public void receiveWeatherTypesList(HashMap<Integer, WeatherType> descriptorsCollection) {
+                MainActivity.this.weatherDescriptions = descriptorsCollection;
+            }
+            @Override
+            public void onFailure(Throwable cause) {
+            }
+        });
+    }
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("citylist",cities);
+    }
+
+
 
 }
