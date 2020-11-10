@@ -43,8 +43,6 @@ public class Fragment_B_info extends Fragment {
 
     private String city;
     IpmaWeatherClient client = new IpmaWeatherClient();
-    private HashMap<String, City> cities;
-    private HashMap<Integer, WeatherType> weatherDescriptions;
     private RecyclerView mRecyclerView;
     private WeatherlistAdapter mAdapter;
     private List<Weather> tempo ;
@@ -85,7 +83,7 @@ public class Fragment_B_info extends Fragment {
         // Get a handle to the RecyclerView.
         mRecyclerView = view.findViewById(R.id.recyclerviewweather);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new WeatherlistAdapter(view.getContext(), tempo);
+        mAdapter = new WeatherlistAdapter(view.getContext(), tempo, tipo_tempo);
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.

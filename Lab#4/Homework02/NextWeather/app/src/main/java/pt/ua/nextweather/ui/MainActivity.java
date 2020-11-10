@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         callWeatherForecastForACityList();
+        callWeatherDescription();
+
         //Começar Fragment
         feedback = findViewById(R.id.tvFeedback);
 
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     if(DualPane){
                         View vx = findViewById(R.id.your_placeholder2);
                         vx.setVisibility(vx.VISIBLE);
+                        //Log.d("isto", ""+weatherDescriptions.size());
                         Fragment x = Fragment_B_info.newInstance(city, forecast,weatherDescriptions);
                         FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
                         //Fragment x = FragmentA_list.newInstance(cars);
